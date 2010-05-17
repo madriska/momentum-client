@@ -1,5 +1,8 @@
 require_relative "../lib/tempo"
 require "test/unit"
+require "timecop"
+require "tempfile"
+require "fileutils"
 
 # Test::Unit loads a default test if the suite is empty, whose purpose is to
 # fail. Since having empty contexts is a common practice, we decided to
