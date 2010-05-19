@@ -1,4 +1,4 @@
-require_relative "../lib/tempo"
+require "#{File.dirname(__FILE__)}/../lib/turbine"
 require "test/unit"
 require "timecop"
 require "tempfile"
