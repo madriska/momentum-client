@@ -70,6 +70,7 @@ module Turbine
       File.foreach(@file) do |line|
         sum += line.to_f
       end
+
       
       return sum
     end
