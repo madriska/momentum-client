@@ -150,7 +150,11 @@ module Turbine
       end
 
       def log
-        prompt.say File.read("#{turbine_dir}/log/#{Turbine.user}.csv")
+        if File.exist?("#{turbine_dir}/log/#{Turbine.user}.csv")
+          prompt.say File.read("#{turbine_dir}/log/#{Turbine.user}.csv")
+        else
+          prompt.say "No log has been created yet."
+        end
       end
 
       def status
