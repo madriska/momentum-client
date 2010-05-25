@@ -167,7 +167,9 @@ module Turbine
           prompt.say "No entries for this commit yet\n\n"
         else
           entries = queue.entries.join(", ")
-          prompt.say "Entries for this commit: ( #{entries} )\n\n"
+          sum     = queue.entries.inject {|sum, n| sum + n }
+          prompt.say "Entries for this commit: ( #{entries} )"
+          prompt.say "Total for this commit: #{sum}\n\n"
         end
 
         timer = Turbine::Timer.new(turbine_dir)
