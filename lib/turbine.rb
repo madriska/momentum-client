@@ -3,6 +3,8 @@ require "time"
 require "optparse"
 require "pathname"
 require "erb"
+require "json"
+require "digest/sha1"
 
 require "highline"
 require "fastercsv"
@@ -103,9 +105,7 @@ module Turbine
         client  = prompt.ask("client: ")
         project = prompt.ask("project: ")
 
-        FasterCSV.open(".turbine/log/#{user}.csv", "w") do |csv|
-          csv << ["date", "client", "project", "message", "duration"]
-        end
+        File.open(".turbine/log/#{user}.json", "w") { |f| f << {}.to_json }
 
         File.open(".turbine/config.rb", "w") do |f|
           template = File.read("#{File.dirname(__FILE__)}/../data/config.rb.erb")
@@ -150,11 +150,28 @@ module Turbine
         queue << hours
       end
 
+      def load_log_data
+        JSON.parse(File.read("#{turbine_dir}/log/#{Turbine.user}.json"))
+      end
+
       def log
-        if File.exist?("#{turbine_dir}/log/#{Turbine.user}.csv")
-          prompt.say File.read("#{turbine_dir}/log/#{Turbine.user}.csv")
+        unless load_log_data.empty?
+          create_csv
         else
           prompt.say "No log has been created yet."
+        end
+      end
+
+      def create_csv(out=STDOUT)
+        log_data = load_log_data.sort_by { |_, data| [ Date.parse(data["date"]), data["timestamp"] ] }
+        headers = ["date","client","project","description","hours"]
+ 
+                                                            
+        FCSV(out) do |csv|
+          csv << headers
+          log_data.each do |_, data|
+            csv << headers.map { |k| data[k] }
+          end
         end
       end
 
@@ -273,22 +290,33 @@ module Turbine
       end
 
       def export
-        cp "#{turbine_dir}/log/#{Turbine.user}.csv", arguments.first
+        File.open(arguments.first, "w") { |f| create_csv(f) }
       end
 
       def commit
         if message = params[:message]
           queue = Turbine::Queue.new(turbine_dir)
           duration = queue.compute.to_s
+          timestamp = Time.now.to_s
 
           if queue.empty?
             prompt.say "ERROR: No entries!"
             exit
           end
 
-          FasterCSV.open("#{turbine_dir}/log/#{Turbine.user}.csv", "a") do |csv|
-            csv << [Date.today.strftime("%Y.%m.%d"), Turbine.client, Turbine.project, message, duration]
-          end
+          log_data = load_log_data 
+
+          hash = Digest::SHA1.hexdigest([Turbine.user, Turbine.client, Turbine.project, message, duration, timestamp].join(","))
+
+          log_data[hash] = { :user        => Turbine.user, 
+                             :client      => Turbine.client,
+                             :project     => Turbine.project,
+                             :description => message,
+                             :hours       => duration,
+                             :timestamp   => timestamp,
+                             :date        => Date.today.to_s }
+
+          File.open("#{turbine_dir}/log/#{Turbine.user}.json", "w") { |f| f << log_data.to_json }
 
           prompt.say "Committed time entry totaling #{duration} hrs"
 

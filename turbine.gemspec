@@ -1,8 +1,8 @@
-TEMPO_VERSION = "0.0.2" 
+TURBINE_VERSION = "0.0.5" 
 
 Gem::Specification.new do |spec|
   spec.name = "turbine"
-  spec.version = TEMPO_VERSION
+  spec.version = TURBINE_VERSION
   spec.platform = Gem::Platform::RUBY
   spec.summary = "A seecret"
   spec.files =  Dir.glob("{examples,lib,spec,vendor,data,bin}/**/**/*") +
