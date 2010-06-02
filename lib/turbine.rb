@@ -8,12 +8,13 @@ require "digest/sha1"
 
 require "highline"
 require "fastercsv"
+require "restclient"
 
 module Turbine
 
   extend self
 
-  attr_accessor :user, :client, :project
+  attr_accessor :user, :client, :project, :service, :api_key
 
   class Timer
     MissingTimestampError = Class.new(StandardError)
@@ -82,8 +83,20 @@ module Turbine
     end
   end
 
+  module UrlHelper
+    extend self
+
+    def append_get_options(url, options)
+      unless options.empty?
+        url <<  "?" + options.delete_if { |_,v| v.nil? }.
+                              map { |k,v| "#{URI.escape(k.to_s)}=#{URI.escape(v)}" }.join("&")
+      end
+    end
+  end 
+
+
   class Application
-    COMMANDS = %w[init start stop commit add reset rewind export log status stash]
+    COMMANDS = %w[init start stop commit add reset rewind export log status stash pull push]
     
     include FileUtils
 
@@ -101,9 +114,14 @@ module Turbine
         mkdir_p(".turbine/log")
         mkdir_p(".turbine/stashes")
         
-        user    = prompt.ask("user: ")
-        client  = prompt.ask("client: ")
-        project = prompt.ask("project: ")
+        user      = prompt.ask("user: ")
+        client    = prompt.ask("client: ")
+        project   = prompt.ask("project: ")
+        service   = prompt.ask("service: ") do |q|
+          q.default = "http://turbine.pixelpowerhouse.com"
+        end
+        api_key   = prompt.ask("api key: ")
+        
 
         File.open(".turbine/log/#{user}.json", "w") { |f| f << {}.to_json }
 
@@ -111,6 +129,31 @@ module Turbine
           template = File.read("#{File.dirname(__FILE__)}/../data/config.rb.erb")
           f << ERB.new(template).result(binding)
         end
+      end
+      
+      def push
+        client = RestClient::Resource.new(Turbine.service, "api", Turbine.api_key)
+        url    = "/time_entries/sync.json"
+        
+        client[url].post(:data => File.read("#{turbine_dir}/log/#{Turbine.user}.json"))
+      end
+
+      def pull
+        client = RestClient::Resource.new(Turbine.service, "api", Turbine.api_key)
+        url    = "/time_entries.json"
+        UrlHelper.append_get_options(url, :user    => Turbine.user, 
+                                          :project => Turbine.project,
+                                          :client  => Turbine.client)
+
+        data = JSON.parse(File.read("#{turbine_dir}/log/#{Turbine.user}.json"))
+
+        cp("#{turbine_dir}/log/#{Turbine.user}.json", "#{turbine_dir}/log/#{Turbine.user}.json.bak")
+        
+        updated_log = data.update(JSON.parse(client[url].get.body)).to_json
+
+        File.open("#{turbine_dir}/log/#{Turbine.user}.json", "w") { |f|
+          f << updated_log        
+        }
       end
 
       def start
@@ -314,7 +357,8 @@ module Turbine
                              :description => message,
                              :hours       => duration,
                              :timestamp   => timestamp,
-                             :date        => Date.today.to_s }
+                             :date        => Date.today.to_s,
+                             :fingerprint => hash }
 
           File.open("#{turbine_dir}/log/#{Turbine.user}.json", "w") { |f| f << log_data.to_json }
 

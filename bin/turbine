@@ -1,5 +1,6 @@
 #!/usr/bin/env ruby
 
+require "rubygems"
 require "#{File.dirname(__FILE__)}/../lib/turbine"
 
 Turbine::Application.new(ARGV).run
