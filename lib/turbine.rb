@@ -389,6 +389,7 @@ module Turbine
           send(command)
         else 
           prompt.say("Unknown command: #{command}")
+          usage
         end
       end
 
@@ -402,6 +403,16 @@ module Turbine
         end
       end
 
+      def usage
+        puts <<-END
+
+
+Usage: #{$0} [OPTION]... COMMAND
+
+Commands:
+#{COMMANDS.map{|x| "  " + x}.join("\n")}
+        END
+      end
 
       def parse_options(argv)
         opts = OptionParser.new
