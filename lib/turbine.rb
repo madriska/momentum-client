@@ -110,6 +110,11 @@ module Turbine
 
     extendable_features = Module.new do
       def init
+        if File.exist?(".turbine")
+          prompt.say(".turbine already exists, exiting")
+          exit 1
+        end
+
         mkdir_p(".turbine")
         mkdir_p(".turbine/log")
         mkdir_p(".turbine/stashes")
