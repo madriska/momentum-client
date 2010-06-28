@@ -1,4 +1,4 @@
-TURBINE_VERSION = "0.0.6" 
+TURBINE_VERSION = "0.1.0" 
 
 Gem::Specification.new do |spec|
   spec.name = "turbine"

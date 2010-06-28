@@ -1,5 +1,10 @@
-Turbine.user    = "<%= user %>"
-Turbine.client  = "<%= client %>"
-Turbine.project = "<%= project %>"
-Turbine.service = "<%= service %>"
-Turbine.api_key = "<%= api_key %>"
+Dir["#{Turbine::Application.config_dir}/commands/standard/*.rb"].each do |extension|
+  require extension
+end
+
+Dir["#{Turbine::Application.config_dir}/commands/custom/*.rb"].each do |extension|
+  require extension
+end
+
+Turbine::Application.url     = "<%= url %>"
+Turbine::Application.api_key = "<%= key %>"
