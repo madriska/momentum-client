@@ -6,5 +6,4 @@ Dir["#{Turbine::Application.config_dir}/commands/custom/*.rb"].each do |extensio
   require extension
 end
 
-Turbine::Application.url     = "<%= url %>"
 Turbine::Application.api_key = "<%= key %>"

@@ -1,6 +1,7 @@
 require "pathname"
 require "highline"
 require "restclient"
+require "json"
 
 module Turbine
   class Application
@@ -24,7 +25,23 @@ module Turbine
         extensions << Module.new(&block)
       end
 
-      attr_accessor :url, :api_key
+      def current_project
+        File.read("#{config_dir}/current_project").chomp
+      end
+
+      def current_project=(project)
+        File.open("#{config_dir}/current_project", "w") { |f| f << project }
+      end
+
+      def current_project_url
+        projects[current_project]
+      end
+
+      def projects
+        JSON.parse(File.read("#{config_dir}/projects.json"))
+      end
+
+      attr_accessor :api_key
     end
 
     def initialize
@@ -47,7 +64,7 @@ module Turbine
     end
 
     def service
-      RestClient::Resource.new(self.class.url, self.class.api_key, "")
+      RestClient::Resource.new(self.class.current_project_url, self.class.api_key, "")
     end
 
     def load_log_data
