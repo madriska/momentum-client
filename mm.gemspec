@@ -1,14 +1,14 @@
-TURBINE_VERSION = "0.2.0" 
+MOMENTUM_VERSION = "0.2.0" 
 
 Gem::Specification.new do |spec|
-  spec.name = "turbine"
-  spec.version = TURBINE_VERSION
+  spec.name = "mm"
+  spec.version = MOMENTUM_VERSION
   spec.platform = Gem::Platform::RUBY
   spec.summary = "A seecret"
   spec.files =  Dir.glob("{examples,lib,spec,vendor,data,bin}/**/**/*") +
                       ["Rakefile"]
   spec.require_path = "lib"
-  spec.executables = ["turbine"]
+  spec.executables = ["mm"]
 
   spec.test_files = Dir[ "test/*_test.rb" ]
   spec.has_rdoc = true
