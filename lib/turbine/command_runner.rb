@@ -20,13 +20,13 @@ module Turbine
       setup
       parse_options(*argv)
 
-      if respond_to?(command) 
+      if command && respond_to?(command)
         send(command)
       else 
         prompt.say("Unknown command: #{command}")
       end
 
-       teardown
+      teardown
     end
 
     def init_and_exit(*argv)
