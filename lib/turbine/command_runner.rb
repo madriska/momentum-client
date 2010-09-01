@@ -7,7 +7,7 @@ module Turbine
       init_and_exit(*argv) if argv[0] == "init"
 
       unless self.class.config_dir
-        prompt.say "Cannot find config file.  Did you forget to run turbine init?"
+        prompt.say "Cannot find config file.  Did you forget to run mm init?"
         return
       end
 
