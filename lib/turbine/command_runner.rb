@@ -13,6 +13,10 @@ module Turbine
 
       require "#{self.class.config_dir}/config"
 
+      if self.class.global_config_dir
+        Dir["#{self.class.global_config_dir}/commands/*.rb"].each { |f| load f }
+      end
+
       self.class.extensions.each do |extension|
         extend(extension)
       end

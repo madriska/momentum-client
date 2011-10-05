@@ -17,6 +17,13 @@ module Turbine
         end
       end
 
+      def global_config_dir
+        path = File.expand_path("~/.turbine")
+        if File.exist?(path)
+          path
+        end
+      end
+
       def extensions
         @extensions ||= []
       end
