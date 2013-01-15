@@ -1,5 +1,5 @@
 module Turbine
-  class Queue 
+  class Queue
     include Enumerable
 
     def initialize(dir=Turbine::Application.config_dir)
@@ -18,7 +18,7 @@ module Turbine
     def entries
       return [] if empty?
 
-      File.read(@file).split("\n").map { |e| e.to_f }
+      File.read(@file).split("\n").map { |e| e.to_f.round(Turbine::PRECISION) }
     end
 
     def each
@@ -30,7 +30,7 @@ module Turbine
 
       File.foreach(@file).inject(0) do |sum, line|
         sum + line.to_f
-      end
+      end.round(Turbine::PRECISION)
     end
 
     def clear

@@ -13,14 +13,14 @@ module Turbine
     def write_timestamp
       File.open(@file, "w") { |f| f << Time.now.utc.to_s }
     end
-    
+
     def timestamp
       raise MissingTimestampError unless running?
       Time.parse(File.read(@file)).localtime
     end
-    
+
     def elapsed_time
-      (Time.now.utc - timestamp.utc) / 60.0 / 60.0
+      ((Time.now.utc - timestamp.utc) / 60.0 / 60.0).round(Turbine::PRECISION)
     end
 
     def clear_timestamp
@@ -30,6 +30,6 @@ module Turbine
     def running?
       File.exist?(@file)
     end
-  end 
+  end
 end
 

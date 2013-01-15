@@ -1,12 +1,13 @@
-Turbine::Application.extension do 
+Turbine::Application.extension do
   def status
     queue = Turbine::Queue.new
-    
+
     if queue.empty?
       prompt.say "No entries for this commit yet\n\n"
     else
       entries = queue.entries.join(", ")
-      sum     = queue.entries.inject {|sum, n| sum + n }
+      sum     = queue.entries.inject {|sum, n| sum + n }.
+        round(Turbine::PRECISION)
       prompt.say "Entries for this commit: ( #{entries} )"
       prompt.say "Total for this commit: #{sum}\n\n"
     end
