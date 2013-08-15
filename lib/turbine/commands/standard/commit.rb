@@ -1,6 +1,10 @@
+require 'tempfile'
+
 Turbine::Application.extension do
   def commit
-    if message = params[:message]
+    message = params[:message] || message_from_editor
+
+    if message && message != ""
       queue      = Turbine::Queue.new
       duration   = queue.sum.to_s
       timestamp  = Time.now.utc.to_s
@@ -24,6 +28,23 @@ Turbine::Application.extension do
       queue.clear
     else
       prompt.say "You need to supply a message"
+    end
+  end
+
+  private
+
+  # Private launch the default editor to capture a commit message
+  #
+  # Uses the environment variable +MM_EDITOR+ if present, otherwise falls back
+  # to the default +EDITOR+ variable
+  #
+  # Returns text saved to the temp file
+  def message_from_editor
+    Tempfile.open('commit.txt') do |file|
+      editor = ENV['MM_EDITOR'] || ENV['EDITOR']
+      system([editor, file.path].join(' ')) if editor
+
+      message = File.read(file.path)
     end
   end
 end
