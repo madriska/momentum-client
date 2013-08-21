@@ -6,7 +6,21 @@ module Turbine
   module StandardCommands
     include FileUtils
 
+    def setup
+      option_parser.on("--update", "Update") do
+        params[:update] = true
+      end
+    end
+
     def init
+      current_dir = File.dirname(__FILE__)
+
+      if params[:update] == true
+        update_standard_commands(current_dir)
+        prompt.say "Standard commands updated"
+        return
+      end
+
       mkdir_p(".turbine")
       mkdir_p(".turbine/log")
       mkdir_p(".turbine/commands")
@@ -17,8 +31,7 @@ module Turbine
       project_name = params[:arguments][1] || "default"
 
       raise if key.nil?
-      
-      current_dir = File.dirname(__FILE__)
+
 
       write_file("log/#{key}.json") { |f| f << [].to_json }
 
@@ -35,8 +48,14 @@ module Turbine
        f << { project_name => url }.to_json
       end
 
-      cp_r("#{current_dir}/standard", 
-           "#{self.class.config_dir}/commands/")
+      update_standard_commands(current_dir)
+    end
+
+    private
+
+    def update_standard_commands(current_dir)
+      cp_r("#{current_dir}/standard",
+        "#{self.class.config_dir}/commands/")
     end
   end
-end      
+end
