@@ -1,4 +1,5 @@
 require 'tempfile'
+require 'shellwords'
 
 Turbine::Application.extension do
   def commit
@@ -40,10 +41,13 @@ Turbine::Application.extension do
   #
   # Returns text saved to the temp file
   def message_from_editor
-    Tempfile.open('commit.txt') do |file|
-      editor = ENV['MM_EDITOR'] || ENV['EDITOR']
-      system([editor, file.path].join(' ')) if editor
+    editor = ENV['MM_EDITOR'] || ENV['EDITOR']
 
+    return unless editor
+
+    Tempfile.open('commit.txt') do |file|
+      editor_invocation = "#{editor} #{file.path}"
+      system(*Shellwords.split(editor_invocation))
       message = File.read(file.path)
     end
   end
