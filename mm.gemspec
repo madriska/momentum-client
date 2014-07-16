@@ -17,4 +17,8 @@ Gem::Specification.new do |spec|
                    "brad@bradedier.com"]
   spec.homepage = "http://momentum.madriska.com"
   spec.description = "CLI for Madriska Momentum"
+
+  spec.add_dependency "highline", ">= 1.6.20"
+  spec.add_dependency "rest-client", ">= 1.7.2"
+  spec.add_dependency "json"
 end
