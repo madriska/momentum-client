@@ -1,4 +1,4 @@
-MOMENTUM_VERSION = "0.2.1" 
+MOMENTUM_VERSION = "0.2.2"
 
 Gem::Specification.new do |spec|
   spec.name = "mm"
