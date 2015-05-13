@@ -1,4 +1,4 @@
-MOMENTUM_VERSION = "0.2.2"
+MOMENTUM_VERSION = "0.2.3"
 
 Gem::Specification.new do |spec|
   spec.name = "mm"
@@ -18,7 +18,7 @@ Gem::Specification.new do |spec|
   spec.homepage = "http://momentum.madriska.com"
   spec.description = "CLI for Madriska Momentum"
 
-  spec.add_dependency "highline", ">= 1.6.20"
-  spec.add_dependency "rest-client", ">= 1.7.2"
+  spec.add_dependency "highline", "~> 1.6.20"
+  spec.add_dependency "rest-client", "~> 1.7.2"
   spec.add_dependency "json"
 end
