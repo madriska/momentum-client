@@ -1,0 +1,26 @@
+PATH
+  remote: .
+  specs:
+    mm (0.2.2)
+      highline (>= 1.6.20)
+      json
+      rainbow (= 2.0.0)
+      rest-client (>= 1.7.2)
+
+GEM
+  remote: https://rubygems.org/
+  specs:
+    highline (1.6.21)
+    json (1.8.1)
+    mime-types (2.4.3)
+    netrc (0.8.0)
+    rainbow (2.0.0)
+    rest-client (1.7.2)
+      mime-types (>= 1.16, < 3.0)
+      netrc (~> 0.7)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  mm!
